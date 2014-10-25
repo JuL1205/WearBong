@@ -9,13 +9,17 @@ import android.view.MenuItem;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.wearable.Asset;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
+import com.google.android.gms.wearable.MessageApi;
+import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Wearable;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Scanner;
 
 
 public class MyActivity extends ActionBarActivity implements
@@ -23,15 +27,53 @@ public class MyActivity extends ActionBarActivity implements
 
     private GoogleApiClient mGoogleApiClient;
 
+    private MessageApi.MessageListener mMessageListener = new MessageApi.MessageListener(){ // listener
+        @Override
+
+        public void onMessageReceived(MessageEvent messageEvent) {
+            Scanner s = new Scanner(messageEvent.getPath());
+            String command = s.next();
+            if(command.compareTo("capture") == 0){
+
+            } else(command.compareTo("timer") == 0){
+              int arg = s.nextInt();
+
+            }
+
+            s.close();
+        }
+    }
+
+
+    public void WearableNodeConnect(){
+        //PendingResult<DataApi.DataItemResult> pendingResult = Wearable.
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
-
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(Wearable.API)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
+                .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                    @Override
+                    public void onConnected(Bundle bundle) {
+                        Log.d("jul", "onConnected : " + bundle);
+                        WearableNodeConnect();
+                    }
+
+                    @Override
+                    public void onConnectionSuspended(int i) {
+                        Log.d("jul", "onConnetionSuspended : " + i);
+                    }
+                })
+                .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
+                    @Override
+                    public void onConnectionFailed(ConnectionResult connectionResult) {
+                        Log.d("jul", "onConnectionFailed : " + connectionResult);
+                    }
+                })
                 .build();
     }
 
