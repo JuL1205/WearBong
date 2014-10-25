@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pre-dex-items>
+
+    <item
+        dex="/home/crasy/WearBong/mobile/build/intermediates/pre-dexed/debug/classes-a01370d4df3827589dcd1931fb916de61d497741.jar"
+        jar="/home/crasy/WearBong/mobile/build/intermediates/exploded-aar/com.google.android.gms/play-services/6.1.11/classes.jar"
+        jumboMode="false"
+        revision="21.0.1"
+        sha1="0f700f6802ba1a1f1fa7ac26d5db0666a89d75a6"/>
+    <item
+        dex="/home/crasy/WearBong/wear/build/intermediates/pre-dexed/debug/internal_impl-20.0.0-613737ca16306d411481bb064aff039143028e59.jar"
+        jar="/home/crasy/WearBong/wear/build/intermediates/exploded-aar/com.android.support/support-v4/20.0.0/libs/internal_impl-20.0.0.jar"
+        jumboMode="false"
+        revision="21.0.1"
+        sha1="e40b3078e3fbd353c9f44da8df25a8fc0078209d"/>
+    <item
+        dex="/home/crasy/WearBong/wear/build/intermediates/pre-dexed/debug/classes-a1242d4281f2414280b45ab3f0ae1401783e6656.jar"
+        jar="/home/crasy/WearBong/wear/build/intermediates/exploded-aar/com.google.android.gms/play-services-wearable/6.1.11/classes.jar"
+        jumboMode="false"
+        revision="21.0.1"
+        sha1="711351f12980fffdff7f1b0be9303ac6611affd8"/>
+    <item
+        dex="/home/crasy/WearBong/wear/build/intermediates/pre-dexed/debug/classes-7df2c47c55e456f7b751dcf33b2791b598d5f791.jar"
+        jar="/home/crasy/WearBong/wear/build/intermediates/exploded-aar/com.android.support/support-v4/20.0.0/classes.jar"
+        jumboMode="false"
+        revision="21.0.1"
+        sha1="8694693636ab36910c8100ce527c258ff3ebece0"/>
+    <item
+        dex="/home/crasy/WearBong/wear/build/intermediates/pre-dexed/debug/classes-766e6cbc79d955fcf438b541cc0050f98409318a.jar"
+        jar="/home/crasy/WearBong/wear/build/intermediates/exploded-aar/com.android.support/support-v13/20.0.0/classes.jar"
+        jumboMode="false"
+        revision="21.0.1"
+        sha1="e128103d5281ddd26195a7f980b36d0d005a4e56"/>
+    <item
+        dex="/home/crasy/WearBong/wear/build/intermediates/pre-dexed/debug/classes-b31795b8ec4615dddcd1a77bba75886989e78dd4.jar"
+        jar="/home/crasy/WearBong/wear/build/intermediates/exploded-aar/com.google.android.support/wearable/1.0.0/classes.jar"
+        jumboMode="false"
+        revision="21.0.1"
+        sha1="6804efbb78d7facc2e1aa107c7342bee83afae45"/>
+    <item
+        dex="/home/crasy/WearBong/mobile/build/intermediates/pre-dexed/debug/classes-6bc78826efc9947b40d444818561aa1059ae052b.jar"
+        jar="/home/crasy/WearBong/mobile/build/intermediates/exploded-aar/com.android.support/appcompat-v7/21.0.0/classes.jar"
+        jumboMode="false"
+        revision="21.0.1"
+        sha1="95fd37732ec852e99f07eeb516a3650172f1d136"/>
+    <item
+        dex="/home/crasy/WearBong/wear/build/intermediates/pre-dexed/debug/internal_impl-20.0.0-a72bf64b5198018ed9112d33b21d35c395040c18.jar"
+        jar="/home/crasy/WearBong/wear/build/intermediates/exploded-aar/com.android.support/support-v13/20.0.0/libs/internal_impl-20.0.0.jar"
+        jumboMode="false"
+        revision="21.0.1"
+        sha1="27bbd3982cdfe4468a9bf99c8c773734a9049e33"/>
+    <item
+        dex="/home/crasy/WearBong/mobile/build/intermediates/pre-dexed/debug/internal_impl-21.0.0-a314bf9fa7f23aacd6735cf57f4082b6fc196062.jar"
+        jar="/home/crasy/WearBong/mobile/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.0/libs/internal_impl-21.0.0.jar"
+        jumboMode="false"
+        revision="21.0.1"
+        sha1="1609e6d42d0480b0f4188e2c29f75388fa12a8f0"/>
+    <item
+        dex="/home/crasy/WearBong/wear/build/intermediates/pre-dexed/debug/support-annotations-20.0.0-c24bcee54ace61579e2a07b4ad83aedd1ef5397d.jar"
+        jar="/home/crasy/installed/android-studio (2)/sdk/extras/android/m2repository/com/android/support/support-annotations/20.0.0/support-annotations-20.0.0.jar"
+        jumboMode="false"
+        revision="21.0.1"
+        sha1="9d9013e9ff35fc3756411e62873c363c70c638fa"/>
+    <item
+        dex="/home/crasy/WearBong/mobile/build/intermediates/pre-dexed/debug/classes-fe902be88b4790a425cad23aa145798ea243830d.jar"
+        jar="/home/crasy/WearBong/mobile/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.0/classes.jar"
+        jumboMode="false"
+        revision="21.0.1"
+        sha1="686344a780033e4ba22b926cd225f8d4941247e6"/>
+    <item
+        dex="/home/crasy/WearBong/mobile/build/intermediates/pre-dexed/debug/support-annotations-21.0.0-d6301458484221721213888dd59ad27dd817cc1f.jar"
+        jar="/home/crasy/installed/android-studio (2)/sdk/extras/android/m2repository/com/android/support/support-annotations/21.0.0/support-annotations-21.0.0.jar"
+        jumboMode="false"
+        revision="21.0.1"
+        sha1="1a578b9607b36266c63d43a4fa0ab5664dbe911e"/>
+
+</pre-dex-items>

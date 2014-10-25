@@ -6,8 +6,11 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.wearable.view.WatchViewStub;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
-
+import android.hardware.camera2.*;
+import android.widget.*;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -23,36 +26,31 @@ import com.google.android.gms.wearable.Wearable;
 import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
 
-public class MyActivity extends Activity implements
-        DataApi.DataListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
-
+public class MyActivity extends Activity implements DataApi.DataListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     private GoogleApiClient mGoogleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
-
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(Wearable.API)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
-
         final WatchViewStub stub = (WatchViewStub) findViewById(R.id.watch_view_stub);
         stub.setOnLayoutInflatedListener(new WatchViewStub.OnLayoutInflatedListener() {
             @Override
             public void onLayoutInflated(WatchViewStub stub) {
             }
         });
-    }
 
+    }
     @Override
     protected void onStart() {
         super.onStart();
         mGoogleApiClient.connect();
     }
-
     @Override
     protected void onStop() {
         if (null != mGoogleApiClient && mGoogleApiClient.isConnected()) {
@@ -60,7 +58,6 @@ public class MyActivity extends Activity implements
         }
         super.onStop();
     }
-
     @Override
     public void onConnected(Bundle bundle) {
         Log.e("jul", "wear - onConnected");
@@ -80,17 +77,14 @@ public class MyActivity extends Activity implements
             }
         });
     }
-
     @Override
     public void onConnectionSuspended(int i) {
         Log.e("jul", "wear - onConnectionSuspended");
     }
-
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         Log.e("jul", "wear - onConnectionFailed");
     }
-
     @Override
     public void onDataChanged(DataEventBuffer dataEvents) {
         for (DataEvent event : dataEvents) {
@@ -101,7 +95,6 @@ public class MyActivity extends Activity implements
             }
         }
     }
-
     public Bitmap loadBitmapFromAsset(Asset asset){
         if(asset == null){
             throw new IllegalArgumentException("Asset must be non-null");
