@@ -104,6 +104,12 @@ public class MyActivity extends Activity implements DataApi.DataListener, Google
 
     private void initViews(){
         mIvFrame = (ImageView) findViewById(R.id.iv_frame);
+        mIvFrame.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendToPhone("capture", null, null);
+            }
+        });
     }
 
     @Override

@@ -28,6 +28,7 @@ import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.Wearable;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -48,7 +49,7 @@ public class MyActivity extends ActionBarActivity implements
             Scanner s = new Scanner(messageEvent.getPath());
             String command = s.next();
             if(command.compareTo("capture") == 0){ // to capture
-//            takePhoto();
+                takePhoto();
             } else if(command.compareTo("timer") == 0){
               if(s.hasNextInt()) {
                   int args = s.nextInt();
@@ -64,25 +65,24 @@ public class MyActivity extends ActionBarActivity implements
 
     private void setTimer(int args){ CapturePhotoTime = args * 1000; }
 
-//    private void takePhoto(){
-//        TimerTask taken;
-//        Timer waitTime = new Timer();
-//        setTimer(3);
-//        Log.d("fuck", System.currentTimeMillis() + "");
-//        taken = new TimerTask() {
-//            @Override
-//            public void run() {
-//                mcamera.takePicture(null, null, new Camera.PictureCallback() {
-//                    @Override
-//                    public void onPictureTaken(byte[] data, Camera camera) {
-//                        Log.d("jul", "Take Picture after " + CapturePhotoTime);
-//                        sendToWear("result", data, null);
-//                    }
-//                });
-//            }
-//        };
-//        waitTime.schedule(taken, CapturePhotoTime);
-//    }
+    private void takePhoto(){
+        TimerTask taken;
+        Timer waitTime = new Timer();
+        setTimer(3);
+        Log.d("fuck", System.currentTimeMillis() + "");
+        taken = new TimerTask() {
+            @Override
+            public void run() {
+                mcamera.takePicture(null, null, new Camera.PictureCallback() {
+                    @Override
+                    public void onPictureTaken(byte[] data, Camera camera) {
+                        sendToWear("result", data, null);
+                    }
+                });
+            }
+        };
+        waitTime.schedule(taken, CapturePhotoTime);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,7 +103,6 @@ public class MyActivity extends ActionBarActivity implements
                 }
             }
             public void surfaceChanged(SurfaceHolder holder,int type, int w,int h ){
-                Log.e("jul", "surfaceChanged w = "+w);
                 Camera.Parameters parameters = mcamera.getParameters();
                 parameters.setRotation(90);
                 parameters.setPreviewSize(w, h);
@@ -114,7 +113,6 @@ public class MyActivity extends ActionBarActivity implements
                     @Override
                     public void onPreviewFrame(byte[] data, Camera camera) {
                         Camera.Size previewSize = mcamera.getParameters().getPreviewSize();
-                        Log.e("jul", "preview size = "+previewSize);
 
                         int[] rgb = decodeYUV420SP(data, previewSize.width, previewSize.height);
                         Bitmap bmp = Bitmap.createBitmap(rgb, previewSize.width, previewSize.height, Bitmap.Config.ARGB_8888);
@@ -135,7 +133,7 @@ public class MyActivity extends ActionBarActivity implements
                         Bitmap bmpSmall = Bitmap.createScaledBitmap(bmp, smallWidth, smallHeight, false);
                         Bitmap bmpSmallRotated = Bitmap.createBitmap(bmpSmall, 0, 0, smallWidth, smallHeight, matrix, false);
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        bmpSmallRotated.compress(Bitmap.CompressFormat.WEBP, 30, baos);
+                        bmpSmallRotated.compress(Bitmap.CompressFormat.WEBP, 80, baos);
 //                        displayFrameLag++;
                         sendToWear("preview", baos.toByteArray(), new ResultCallback<MessageApi.SendMessageResult>() {
                             @Override
