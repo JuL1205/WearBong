@@ -2,8 +2,8 @@ package com.gdg.wearbong;
 
 import android.annotation.TargetApi;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.hardware.Camera;
-import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -12,9 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -28,7 +26,6 @@ import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.Wearable;
-import java.io.ByteArrayOutputStream;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Scanner;
@@ -51,7 +48,7 @@ public class MyActivity extends ActionBarActivity implements
             Scanner s = new Scanner(messageEvent.getPath());
             String command = s.next();
             if(command.compareTo("capture") == 0){ // to capture
-            takePhoto();
+//            takePhoto();
             } else if(command.compareTo("timer") == 0){
               if(s.hasNextInt()) {
                   int args = s.nextInt();
@@ -67,25 +64,25 @@ public class MyActivity extends ActionBarActivity implements
 
     private void setTimer(int args){ CapturePhotoTime = args * 1000; }
 
-    private void takePhoto(){
-        TimerTask taken;
-        Timer waitTime = new Timer();
-        setTimer(3);
-        Log.d("fuck", System.currentTimeMillis()+"");
-        taken = new TimerTask() {
-            @Override
-            public void run() {
-                mcamera.takePicture(null, null, new Camera.PictureCallback() {
-                    @Override
-                    public void onPictureTaken(byte[] data, Camera camera) {
-                        Log.d("jul", "Take Picture after " + CapturePhotoTime);
-                        sendToWear("result", data, null);
-                    }
-                });
-            }
-        };
-        waitTime.schedule(taken, CapturePhotoTime);
-    }
+//    private void takePhoto(){
+//        TimerTask taken;
+//        Timer waitTime = new Timer();
+//        setTimer(3);
+//        Log.d("fuck", System.currentTimeMillis() + "");
+//        taken = new TimerTask() {
+//            @Override
+//            public void run() {
+//                mcamera.takePicture(null, null, new Camera.PictureCallback() {
+//                    @Override
+//                    public void onPictureTaken(byte[] data, Camera camera) {
+//                        Log.d("jul", "Take Picture after " + CapturePhotoTime);
+//                        sendToWear("result", data, null);
+//                    }
+//                });
+//            }
+//        };
+//        waitTime.schedule(taken, CapturePhotoTime);
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,26 +103,57 @@ public class MyActivity extends ActionBarActivity implements
                 }
             }
             public void surfaceChanged(SurfaceHolder holder,int type, int w,int h ){
+                Log.e("jul", "surfaceChanged w = "+w);
                 Camera.Parameters parameters = mcamera.getParameters();
                 parameters.setRotation(90);
                 parameters.setPreviewSize(w, h);
                 mcamera.setParameters(parameters);
                 mcamera.startPreview();
                 mcamera.setPreviewCallback(new Camera.PreviewCallback() {
+                    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
                     @Override
                     public void onPreviewFrame(byte[] data, Camera camera) {
-                        sendToWear("preview", data, null);
+                        Camera.Size previewSize = mcamera.getParameters().getPreviewSize();
+                        Log.e("jul", "preview size = "+previewSize);
+
+                        int[] rgb = decodeYUV420SP(data, previewSize.width, previewSize.height);
+                        Bitmap bmp = Bitmap.createBitmap(rgb, previewSize.width, previewSize.height, Bitmap.Config.ARGB_8888);
+                        int smallWidth, smallHeight;
+                        int dimension = 200;
+                            dimension = 50;
+                        if(previewSize.width > previewSize.height) {
+                            smallWidth = dimension;
+                            smallHeight = dimension*previewSize.height/previewSize.width;
+                        } else {
+                            smallHeight = dimension;
+                            smallWidth = dimension*previewSize.width/previewSize.height;
+                        }
+
+                        Matrix matrix = new Matrix();
+//                        matrix.postRotate(mCameraOrientation);
+
+                        Bitmap bmpSmall = Bitmap.createScaledBitmap(bmp, smallWidth, smallHeight, false);
+                        Bitmap bmpSmallRotated = Bitmap.createBitmap(bmpSmall, 0, 0, smallWidth, smallHeight, matrix, false);
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        bmpSmallRotated.compress(Bitmap.CompressFormat.WEBP, 30, baos);
+//                        displayFrameLag++;
+                        sendToWear("preview", baos.toByteArray(), new ResultCallback<MessageApi.SendMessageResult>() {
+                            @Override
+                            public void onResult(MessageApi.SendMessageResult result) {
+                            }
+                        });
+                        bmp.recycle();
+                        bmpSmall.recycle();
+                        bmpSmallRotated.recycle();
+//                        readyToProcessImage = true;
+
+
+
+//                        sendToWear("preview", data, null);
                     }
                 });
-//                mcamera.takePicture(null,null,new Camera.PictureCallback() {
-//                            @Override
-//                            public void onPictureTaken(byte[] data, Camera camera) {
-//                                //ByteArrayOutputStream stream = new ByteArrayOutputStream();
-//                                //previewPic.compress(Bitmap.CompressFormat.JPEG, 80, stream); // PNG && 80% quailty
-//                                sendToWear("preview", data, null);
-//                            }
-//                        }
-//                );
+
+                mcamera.startPreview();
             }
             @Override
             public void surfaceDestroyed(SurfaceHolder holder) {
@@ -158,6 +186,32 @@ public class MyActivity extends ActionBarActivity implements
                 })
                 .build();
     }
+
+
+    public int[] decodeYUV420SP( byte[] yuv420sp, int width, int height) {
+        final int frameSize = width * height;
+        int rgb[]=new int[width*height];
+        for (int j = 0, yp = 0; j < height; j++) {
+            int uvp = frameSize + (j >> 1) * width, u = 0, v = 0;
+            for (int i = 0; i < width; i++, yp++) {
+                int y = (0xff & ((int) yuv420sp[yp])) - 16;
+                if (y < 0) y = 0;
+                if ((i & 1) == 0) {
+                    v = (0xff & yuv420sp[uvp++]) - 128;
+                    u = (0xff & yuv420sp[uvp++]) - 128;
+                }
+                int y1192 = 1192 * y;
+                int r = (y1192 + 1634 * v);
+                int g = (y1192 - 833 * v - 400 * u);
+                int b = (y1192 + 2066 * u);
+                if (r < 0) r = 0; else if (r > 262143) r = 262143;
+                if (g < 0) g = 0; else if (g > 262143) g = 262143;
+                if (b < 0) b = 0; else if (b > 262143) b = 262143;
+                rgb[yp] = 0xff000000 | ((r << 6) & 0xff0000)
+                        | ((g >> 2) & 0xff00) | ((b >> 10) & 0xff);
+            }
+        }
+        return rgb;   }
 
 
     @Override
