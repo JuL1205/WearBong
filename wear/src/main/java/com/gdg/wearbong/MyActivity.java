@@ -26,8 +26,6 @@ import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
-import com.google.android.gms.wearable.PutDataMapRequest;
-import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 
 import java.io.InputStream;
@@ -40,8 +38,7 @@ public class MyActivity extends Activity implements
     private String TAG = "jul";
     private GoogleApiClient mGoogleApiClient;
     private Node mPhoneNode = null;
-
-    private ImageView mIvFrame;
+    WearGridPagerAdapter adapter;
 
     private MessageApi.MessageListener mMessageListener = new MessageApi.MessageListener() {
         @Override
@@ -60,7 +57,9 @@ public class MyActivity extends Activity implements
             @Override
             public void run() {
                 Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
-                mIvFrame.setImageBitmap(bmp);
+                //mIvFrame.setImageBitmap(bmp);
+                //Pass Bitmap!
+                adapter.getImageFragment().newInstance(bmp);
             }
         });
     }
@@ -85,7 +84,10 @@ public class MyActivity extends Activity implements
             @Override
             public void onLayoutInflated(WatchViewStub stub) {
                 final GridViewPager pager = (GridViewPager) findViewById(R.id.pager);
-                pager.setAdapter(new WearGridPagerAdapter(MyActivity.this, getFragmentManager()));
+                adapter = new WearGridPagerAdapter(MyActivity.this, getFragmentManager());
+                pager.setAdapter(adapter);
+
+
             }
         });
 
@@ -94,7 +96,7 @@ public class MyActivity extends Activity implements
     }
 
     private void initViews(){
-        mIvFrame = (ImageView) findViewById(R.id.iv_frame);
+        //mIvFrame = (ImageView) findViewById(R.id.iv_frame);
     }
 
     @Override
