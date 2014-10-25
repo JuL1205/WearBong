@@ -1,12 +1,17 @@
 package com.gdg.wearbong;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 
 public class BlankFragment extends Fragment {
@@ -18,6 +23,8 @@ public class BlankFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private Bitmap ReceivedPreviewBitmap;
+    private ImageView Preview;
 
     private OnFragmentInteractionListener mListener;
 
@@ -30,11 +37,13 @@ public class BlankFragment extends Fragment {
      * @return A new instance of fragment BlankFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static BlankFragment newInstance(String param1, String param2) {
+    public BlankFragment newInstance(Bitmap ReceivedBimap) {
         BlankFragment fragment = new BlankFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+//        args.putString(ARG_PARAM1, param1);
+//        args.putString(ARG_PARAM2, param2);
+        ReceivedPreviewBitmap = ReceivedBimap;
+        Preview.setImageBitmap(ReceivedPreviewBitmap);
         fragment.setArguments(args);
         return fragment;
     }
@@ -55,7 +64,10 @@ public class BlankFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_blank, container, false);
+        FrameLayout FL = (FrameLayout)inflater.inflate(R.layout.fragment_blank, container, false);
+        Preview = (ImageView)FL.findViewById(R.id.previewimg);
+        Preview.setImageDrawable(getResources().getDrawable(R.drawable.ic_launcher));
+        return FL;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

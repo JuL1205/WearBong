@@ -47,10 +47,14 @@ public class WearGridPagerAdapter extends FragmentGridPagerAdapter {
     };
         // Override methods in FragmentGridPagerAdapter
 
+    private Fragment imageFragment;
+
     @Override
     public Fragment getFragment(int row, int col) {
         Page page = Pages[row][col];
         Fragment fragment = Fragment.instantiate(mContext, page.Frag.getName());
+
+
 //        CardFragment card = CardFragment.create
         // Advanced settings
 //        fragment.setCardGravity(page.cardGravity);
