@@ -40,13 +40,16 @@ public class MyActivity extends Activity implements DataApi.DataListener, Google
     private String TAG = "jul";
     private GoogleApiClient mGoogleApiClient;
     private Node mPhoneNode = null;
-    WearGridPagerAdapter adapter;
+//    WearGridPagerAdapter adapter;
+
+    private ImageView mIvFrame;
 
     private MessageApi.MessageListener mMessageListener = new MessageApi.MessageListener() {
         @Override
         public void onMessageReceived (MessageEvent m){
             Scanner s = new Scanner(m.getPath());
             String command = s.next();
+            Log.e("jul", "cmd = "+command);
             if(command.equals("preview")) {
                 onReceivePreview(m.getData());
             }
@@ -55,13 +58,12 @@ public class MyActivity extends Activity implements DataApi.DataListener, Google
     };
 
     private void onReceivePreview(final byte[] data){
+        Log.e("jul", "data length = "+data.length);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
-                //mIvFrame.setImageBitmap(bmp);
-                //Pass Bitmap!
-              //  adapter.getImageFragment().newInstance(bmp);
+                mIvFrame.setImageBitmap(bmp);
             }
         });
     }
@@ -75,44 +77,45 @@ public class MyActivity extends Activity implements DataApi.DataListener, Google
 
         mContext = this;
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(Wearable.API)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();
         final WatchViewStub stub = (WatchViewStub) findViewById(R.id.watch_view_stub);
         stub.setOnLayoutInflatedListener(new WatchViewStub.OnLayoutInflatedListener() {
             @Override
             public void onLayoutInflated(WatchViewStub stub) {
-                final GridViewPager pager = (GridViewPager) findViewById(R.id.pager);
-                adapter = new WearGridPagerAdapter(MyActivity.this, getFragmentManager());
-                pager.setAdapter(adapter);
+//                final GridViewPager pager = (GridViewPager) findViewById(R.id.pager);
+//                adapter = new WearGridPagerAdapter(MyActivity.this, getFragmentManager());
+//                pager.setAdapter(adapter);
 
 
+                mGoogleApiClient = new GoogleApiClient.Builder(mContext)
+                        .addApi(Wearable.API)
+                        .addConnectionCallbacks(MyActivity.this)
+                        .addOnConnectionFailedListener(MyActivity.this)
+                        .build();
+
+                mGoogleApiClient.connect();
+
+                initViews();
             }
         });
 
 
-        initViews();
+
     }
 
     private void initViews(){
-        //mIvFrame = (ImageView) findViewById(R.id.iv_frame);
+        mIvFrame = (ImageView) findViewById(R.id.iv_frame);
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        mGoogleApiClient.connect();
-    }
-    @Override
-    protected void onStop() {
+    protected void onDestroy() {
+
         if (null != mGoogleApiClient && mGoogleApiClient.isConnected()) {
             Wearable.MessageApi.removeListener(mGoogleApiClient, mMessageListener);
 
             mGoogleApiClient.disconnect();
         }
-        super.onStop();
+
+        super.onDestroy();
     }
     @Override
     public void onConnected(Bundle bundle) {

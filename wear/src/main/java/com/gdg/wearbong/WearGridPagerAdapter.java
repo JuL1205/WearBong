@@ -12,6 +12,7 @@ import android.support.wearable.view.FragmentGridPagerAdapter;
 public class WearGridPagerAdapter extends FragmentGridPagerAdapter {
 
     private Context mContext;
+    private BlankFragment mPreviewFragment;
 
     public WearGridPagerAdapter(Context ctx,FragmentManager fm) {
         super(fm);
@@ -47,12 +48,18 @@ public class WearGridPagerAdapter extends FragmentGridPagerAdapter {
     };
         // Override methods in FragmentGridPagerAdapter
 
-    private Fragment imageFragment;
+
+    public BlankFragment getPreviewFragment(){
+        return mPreviewFragment;
+    }
 
     @Override
     public Fragment getFragment(int row, int col) {
         Page page = Pages[row][col];
         Fragment fragment = Fragment.instantiate(mContext, page.Frag.getName());
+        if(row == 0 && col == 0){
+            mPreviewFragment = (BlankFragment)fragment;
+        }
 
 
 //        CardFragment card = CardFragment.create

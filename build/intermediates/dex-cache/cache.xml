@@ -3,6 +3,7 @@
 
     <item
 <<<<<<< HEAD
+<<<<<<< HEAD
         dex="/home/crasy/WearBong/mobile/build/intermediates/pre-dexed/debug/classes-a01370d4df3827589dcd1931fb916de61d497741.jar"
         jar="/home/crasy/WearBong/mobile/build/intermediates/exploded-aar/com.google.android.gms/play-services/6.1.11/classes.jar"
         jumboMode="false"
@@ -173,6 +174,8 @@
         revision="21.0.1"
         sha1="e40b3078e3fbd353c9f44da8df25a8fc0078209d"/>
 =======
+=======
+>>>>>>> ad16409e1c61c69f064869a7e7f46c10c24bc67d
         dex="/Users/owner/workspace/GIT/WearBong/wear/build/intermediates/pre-dexed/debug/support-annotations-20.0.0-bca9cd8c8082330ef7549e0398af852faae531fd.jar"
         jar="/Applications/Android Studio.app/sdk/extras/android/m2repository/com/android/support/support-annotations/20.0.0/support-annotations-20.0.0.jar"
         jumboMode="false"
@@ -207,35 +210,16 @@
 =======
         dex="/Users/owner/workspace/GIT/WearBong/wear/build/intermediates/pre-dexed/debug/internal_impl-20.0.0-126f20294f3a0eb004f0502e990a0a90bf3b1bec.jar"
         jar="/Users/owner/workspace/GIT/WearBong/wear/build/intermediates/exploded-aar/com.android.support/support-v13/20.0.0/libs/internal_impl-20.0.0.jar"
->>>>>>> 028b3231166138bf809a854a613f3a16297b7e9a
         jumboMode="false"
         revision="21.0.1"
         sha1="27bbd3982cdfe4468a9bf99c8c773734a9049e33"/>
     <item
-<<<<<<< HEAD
-        dex="/home/youngbin/WearBong/wear/build/intermediates/pre-dexed/debug/classes-a76ee732c56e5f40d304d03ff2a53f1c8af99c28.jar"
-        jar="/home/youngbin/WearBong/wear/build/intermediates/exploded-aar/com.google.android.gms/play-services-wearable/6.1.11/classes.jar"
-=======
         dex="/Users/owner/workspace/GIT/WearBong/wear/build/intermediates/pre-dexed/debug/classes-c5995f4bba69f963b87aeec872c51ae1ccff3c0f.jar"
         jar="/Users/owner/workspace/GIT/WearBong/wear/build/intermediates/exploded-aar/com.google.android.gms/play-services-wearable/6.1.11/classes.jar"
->>>>>>> 028b3231166138bf809a854a613f3a16297b7e9a
         jumboMode="false"
         revision="21.0.1"
         sha1="711351f12980fffdff7f1b0be9303ac6611affd8"/>
     <item
-<<<<<<< HEAD
-        dex="/home/youngbin/WearBong/wear/build/intermediates/pre-dexed/debug/internal_impl-20.0.0-0ea4d40ebb177ed2162bfed10f553f14c5571207.jar"
-        jar="/home/youngbin/WearBong/wear/build/intermediates/exploded-aar/com.android.support/support-v4/20.0.0/libs/internal_impl-20.0.0.jar"
-        jumboMode="false"
-        revision="21.0.1"
-        sha1="e40b3078e3fbd353c9f44da8df25a8fc0078209d"/>
-    <item
-        dex="/home/youngbin/WearBong/wear/build/intermediates/pre-dexed/debug/classes-c7c5992325a5b7719bc3643e10bdb5961c22e863.jar"
-        jar="/home/youngbin/WearBong/wear/build/intermediates/exploded-aar/com.android.support/support-v4/20.0.0/classes.jar"
-        jumboMode="false"
-        revision="21.0.1"
-        sha1="8694693636ab36910c8100ce527c258ff3ebece0"/>
-=======
         dex="/Users/owner/workspace/GIT/WearBong/mobile/build/intermediates/pre-dexed/debug/support-annotations-21.0.0-ee576f91b45a6538d4156fc6e674b6f65034f74e.jar"
         jar="/Applications/Android Studio.app/sdk/extras/android/m2repository/com/android/support/support-annotations/21.0.0/support-annotations-21.0.0.jar"
         jumboMode="false"
@@ -283,8 +267,11 @@
         jumboMode="false"
         revision="21.0.1"
         sha1="0f700f6802ba1a1f1fa7ac26d5db0666a89d75a6"/>
+<<<<<<< HEAD
 >>>>>>> origin/master
 >>>>>>> 028b3231166138bf809a854a613f3a16297b7e9a
 >>>>>>> 87c57555ebbc0319acc13a8807f52d60bc3b7ff3
+=======
+>>>>>>> ad16409e1c61c69f064869a7e7f46c10c24bc67d
 
 </pre-dex-items>
