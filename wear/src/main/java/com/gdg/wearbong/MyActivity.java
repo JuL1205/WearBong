@@ -16,6 +16,9 @@ import com.google.android.gms.wearable.Asset;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
+import com.google.android.gms.wearable.MessageApi;
+import com.google.android.gms.wearable.Node;
+import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
@@ -26,7 +29,9 @@ import java.util.concurrent.TimeUnit;
 public class MyActivity extends Activity implements
         DataApi.DataListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
+    private String TAG = "jul";
     private GoogleApiClient mGoogleApiClient;
+    private Node mPhoneNode = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,41 +68,42 @@ public class MyActivity extends Activity implements
 
     @Override
     public void onConnected(Bundle bundle) {
-        Log.e("jul", "wear - onConnected");
+        Log.e(TAG, "wear - onConnected");
 
         Wearable.DataApi.addListener(mGoogleApiClient, this);
 
-        PutDataMapRequest dataMap = PutDataMapRequest.create("/count");
-        dataMap.getDataMap().putInt("count", 1205);
-        PutDataRequest request = dataMap.asPutDataRequest();
-        PendingResult<DataApi.DataItemResult> pendingResult = Wearable.DataApi
-                .putDataItem(mGoogleApiClient, request);
-
-        pendingResult.setResultCallback(new ResultCallback<DataApi.DataItemResult>() {
-            @Override
-            public void onResult(DataApi.DataItemResult dataItemResult) {
-                Log.e("jul", "status = "+dataItemResult.getStatus());
-            }
-        });
+        findPhoneNode();
+//        PutDataMapRequest dataMap = PutDataMapRequest.create("/count");
+//        dataMap.getDataMap().putInt("count", 1205);
+//        PutDataRequest request = dataMap.asPutDataRequest();
+//        PendingResult<DataApi.DataItemResult> pendingResult = Wearable.DataApi
+//                .putDataItem(mGoogleApiClient, request);
+//
+//        pendingResult.setResultCallback(new ResultCallback<DataApi.DataItemResult>() {
+//            @Override
+//            public void onResult(DataApi.DataItemResult dataItemResult) {
+//                Log.e(TAG, "status = "+dataItemResult.getStatus());
+//            }
+//        });
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-        Log.e("jul", "wear - onConnectionSuspended");
+        Log.e(TAG, "wear - onConnectionSuspended");
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        Log.e("jul", "wear - onConnectionFailed");
+        Log.e(TAG, "wear - onConnectionFailed");
     }
 
     @Override
     public void onDataChanged(DataEventBuffer dataEvents) {
         for (DataEvent event : dataEvents) {
             if (event.getType() == DataEvent.TYPE_DELETED) {
-                Log.d("jul", "wear - DataItem deleted: " + event.getDataItem().getUri());
+                Log.d(TAG, "wear - DataItem deleted: " + event.getDataItem().getUri());
             } else if (event.getType() == DataEvent.TYPE_CHANGED) {
-                Log.d("jul", "wear - DataItem changed: " + event.getDataItem().getUri());
+                Log.d(TAG, "wear - DataItem changed: " + event.getDataItem().getUri());
             }
         }
     }
@@ -110,7 +116,7 @@ public class MyActivity extends Activity implements
         ConnectionResult result = mGoogleApiClient.blockingConnect(3000, TimeUnit.MILLISECONDS);
 
         if(!result.isSuccess()){
-            Log.e("jul", "wear - connect google api fail");
+            Log.e(TAG, "wear - connect google api fail");
             return null;
         }
 
@@ -118,10 +124,47 @@ public class MyActivity extends Activity implements
         mGoogleApiClient.disconnect();
 
         if(assetInputStream == null){
-            Log.e("jul", "wear - Requested an unknown Asset.");
+            Log.e(TAG, "wear - Requested an unknown Asset.");
             return null;
         }
 
         return BitmapFactory.decodeStream(assetInputStream);
+    }
+
+
+
+    void findPhoneNode() {
+        PendingResult<NodeApi.GetConnectedNodesResult> pending = Wearable.NodeApi.getConnectedNodes(mGoogleApiClient);
+        pending.setResultCallback(new ResultCallback<NodeApi.GetConnectedNodesResult>() {
+            @Override
+            public void onResult(NodeApi.GetConnectedNodesResult result) {
+                if(result.getNodes().size()>0) {
+                    mPhoneNode = result.getNodes().get(0);
+                    Log.d(TAG, "Found wearable: name=" + mPhoneNode.getDisplayName() + ", id=" + mPhoneNode.getId());
+                    sendToPhone("start", null, null);
+                } else {
+                    mPhoneNode = null;
+                }
+            }
+        });
+    }
+
+    private void sendToPhone(String path, byte[] data, final ResultCallback<MessageApi.SendMessageResult> callback) {
+        if (mPhoneNode != null) {
+            PendingResult<MessageApi.SendMessageResult> pending = Wearable.MessageApi.sendMessage(mGoogleApiClient, mPhoneNode.getId(), path, data);
+            pending.setResultCallback(new ResultCallback<MessageApi.SendMessageResult>() {
+                @Override
+                public void onResult(MessageApi.SendMessageResult result) {
+                    if (callback != null) {
+                        callback.onResult(result);
+                    }
+                    if (!result.getStatus().isSuccess()) {
+                        Log.d(TAG, "ERROR: failed to send Message: " + result.getStatus());
+                    }
+                }
+            });
+        } else {
+            Log.d(TAG, "ERROR: tried to send message before device was found");
+        }
     }
 }
