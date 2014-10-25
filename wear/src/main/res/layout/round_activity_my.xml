@@ -13,4 +13,9 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:text="@string/hello_round" />
+
+    <ImageView
+        android:id="@+id/iv_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </RelativeLayout>

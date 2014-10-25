@@ -6,6 +6,8 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.wearable.view.WatchViewStub;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -17,6 +19,7 @@ import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.MessageApi;
+import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.PutDataMapRequest;
@@ -24,6 +27,7 @@ import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 
 import java.io.InputStream;
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 public class MyActivity extends Activity implements
@@ -32,6 +36,30 @@ public class MyActivity extends Activity implements
     private String TAG = "jul";
     private GoogleApiClient mGoogleApiClient;
     private Node mPhoneNode = null;
+
+    private ImageView mIvFrame;
+
+    private MessageApi.MessageListener mMessageListener = new MessageApi.MessageListener() {
+        @Override
+        public void onMessageReceived (MessageEvent m){
+            Scanner s = new Scanner(m.getPath());
+            String command = s.next();
+            if(command.equals("preview")) {
+                onReceivePreview(m.getData());
+            }
+
+        }
+    };
+
+    private void onReceivePreview(final byte[] data){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
+                mIvFrame.setImageBitmap(bmp);
+            }
+        });
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +78,12 @@ public class MyActivity extends Activity implements
             public void onLayoutInflated(WatchViewStub stub) {
             }
         });
+
+        initViews();
+    }
+
+    private void initViews(){
+        mIvFrame = (ImageView) findViewById(R.id.iv_frame);
     }
 
     @Override
@@ -61,6 +95,8 @@ public class MyActivity extends Activity implements
     @Override
     protected void onStop() {
         if (null != mGoogleApiClient && mGoogleApiClient.isConnected()) {
+            Wearable.MessageApi.removeListener(mGoogleApiClient, mMessageListener);
+
             mGoogleApiClient.disconnect();
         }
         super.onStop();
@@ -73,6 +109,8 @@ public class MyActivity extends Activity implements
         Wearable.DataApi.addListener(mGoogleApiClient, this);
 
         findPhoneNode();
+
+        Wearable.MessageApi.addListener(mGoogleApiClient, mMessageListener);
 //        PutDataMapRequest dataMap = PutDataMapRequest.create("/count");
 //        dataMap.getDataMap().putInt("count", 1205);
 //        PutDataRequest request = dataMap.asPutDataRequest();
