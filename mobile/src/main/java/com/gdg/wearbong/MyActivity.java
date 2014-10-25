@@ -1,11 +1,11 @@
 package com.gdg.wearbong;
 
+import android.annotation.TargetApi;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.support.v7.app.ActionBarActivity;
+import android.os.Build;
 import android.os.Bundle;
-import android.text.format.Time;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,16 +24,12 @@ import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.Wearable;
 
-import org.apache.http.entity.ByteArrayEntity;
-
 import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.util.Scanner;
 
 
 public class MyActivity extends ActionBarActivity implements
-        DataApi.DataListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+        DataApi.DataListener{
 
     private GoogleApiClient mGoogleApiClient;
     private Node mWearNode = null;
@@ -63,9 +59,15 @@ public class MyActivity extends ActionBarActivity implements
 
     private void setTimer(int args){ CapturePhotoTime = args * 1000; }
 
+    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     private void sendPreview(Bitmap previewPic){
+        if(previewPic == null){
+            Log.e("jul", "bm is null");
+        } else{
+            Log.e("jul", "bm is not null");
+        }
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        previewPic.compress(Bitmap.CompressFormat.JPEG, 80, stream); // PNG && 80% quailty
+        previewPic.compress(Bitmap.CompressFormat.WEBP, 50, stream); // PNG && 80% quailty
         sendToWear("preview", stream.toByteArray(), null);
     }
 
@@ -95,10 +97,6 @@ public class MyActivity extends ActionBarActivity implements
                     }
                 })
                 .build();
-
-        mGoogleApiClient.connect();
-        Bitmap testBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.ic_launcher);
-        sendPreview(testBitmap);
     }
 
     @Override
@@ -126,21 +124,6 @@ public class MyActivity extends ActionBarActivity implements
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        Log.e("jul", "onConnectionFailed");
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        Log.e("jul", "onConnectionSuspended");
-    }
-
-    @Override
-    public void onConnected(Bundle connectionHint) {
-        Log.e("jul", "onConnected");
-        Wearable.DataApi.addListener(mGoogleApiClient, this);
-    }
 
     @Override
     protected void onStop() {
@@ -176,8 +159,8 @@ public class MyActivity extends ActionBarActivity implements
             public void onResult(NodeApi.GetConnectedNodesResult result) {
                 if(result.getNodes().size()>0) {
                     mWearNode = result.getNodes().get(0);
-                    Log.d("jul", "Found wearable: name=" + mWearNode.getDisplayName() + ", id=" + mWearNode.getId());
-                    sendToWear("start", null, null);
+                    Bitmap testBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.ic_launcher);
+                    sendPreview(testBitmap);
                 } else {
                     mWearNode = null;
                 }
@@ -187,6 +170,7 @@ public class MyActivity extends ActionBarActivity implements
 
     private void sendToWear(String path, byte[] data, final ResultCallback<MessageApi.SendMessageResult> callback) {
         if (mWearNode != null) {
+            Log.d("jul", "send image = "+data.length);
             PendingResult<MessageApi.SendMessageResult> pending = Wearable.MessageApi.sendMessage(mGoogleApiClient, mWearNode.getId(), path, data);
             pending.setResultCallback(new ResultCallback<MessageApi.SendMessageResult>() {
                 @Override
