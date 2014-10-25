@@ -13,6 +13,7 @@ import com.google.android.gms.wearable.Asset;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
+import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.Wearable;
 
 import java.io.ByteArrayOutputStream;
@@ -33,6 +34,10 @@ public class MyActivity extends ActionBarActivity implements
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
+
+        MessageApi.SendMessageResult result = Wearable.MessageApi.sendMessage(
+                mGoogleApiClient, "", "", null).await();
+
     }
 
     @Override

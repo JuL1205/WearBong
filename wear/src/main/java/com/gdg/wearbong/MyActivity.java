@@ -1,11 +1,16 @@
 package com.gdg.wearbong;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.wearable.view.GridViewPager;
 import android.support.wearable.view.WatchViewStub;
 import android.util.Log;
+import android.view.View;
+import android.view.WindowInsets;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -28,10 +33,14 @@ public class MyActivity extends Activity implements
 
     private GoogleApiClient mGoogleApiClient;
 
+    private Context mContext;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
+
+        mContext = this;
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(Wearable.API)
@@ -43,8 +52,13 @@ public class MyActivity extends Activity implements
         stub.setOnLayoutInflatedListener(new WatchViewStub.OnLayoutInflatedListener() {
             @Override
             public void onLayoutInflated(WatchViewStub stub) {
+                final GridViewPager pager = (GridViewPager) findViewById(R.id.pager);
+                pager.setAdapter(new WearGridPagerAdapter(MyActivity.this, getFragmentManager()));
             }
         });
+
+
+
     }
 
     @Override
@@ -124,4 +138,8 @@ public class MyActivity extends Activity implements
 
         return BitmapFactory.decodeStream(assetInputStream);
     }
+
+    //PageAdapter
+
+
 }
