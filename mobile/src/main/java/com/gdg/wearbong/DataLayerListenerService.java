@@ -17,11 +17,15 @@ public class DataLayerListenerService extends WearableListenerService {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        Log.d(TAG, "service - onCreate");
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+
+        Log.d(TAG, "service - onDestroy");
     }
     @Override
     public void onPeerConnected(Node peer) {
@@ -29,15 +33,22 @@ public class DataLayerListenerService extends WearableListenerService {
     }
     @Override
     public void onMessageReceived(MessageEvent m) {
+        Log.d(TAG, "service - onMessageReceived : "+m.getPath());
         if(m.getPath().equals("start")) {
             Intent startIntent = new Intent(this, MyActivity.class);
             startIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(startIntent);
         }
     }
+
     @Override
     public void onDataChanged(DataEventBuffer dataEvents) {
         // i don't care
     }
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d(TAG, "service - onStartCommand : "+intent.getAction());
+        return START_STICKY;
+    }
 }

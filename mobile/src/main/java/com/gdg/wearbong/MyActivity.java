@@ -12,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.WindowManager;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -36,8 +37,11 @@ import java.util.TimerTask;
 
 public class MyActivity extends ActionBarActivity implements
         DataApi.DataListener{
+
+    private String TAG = "jul";
+
     private GoogleApiClient mGoogleApiClient;
-    private Camera mcamera;
+    private Camera mCamera;
     private Node mWearNode = null;
 
     private int CapturePhotoTime = 0;
@@ -69,11 +73,10 @@ public class MyActivity extends ActionBarActivity implements
         TimerTask taken;
         Timer waitTime = new Timer();
         setTimer(3);
-        Log.d("fuck", System.currentTimeMillis() + "");
         taken = new TimerTask() {
             @Override
             public void run() {
-                mcamera.takePicture(null, null, new Camera.PictureCallback() {
+                mCamera.takePicture(null, null, new Camera.PictureCallback() {
                     @Override
                     public void onPictureTaken(byte[] data, Camera camera) {
                         sendToWear("result", data, null);
@@ -87,6 +90,8 @@ public class MyActivity extends ActionBarActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         setContentView(R.layout.activity_my);
         SurfaceHolder surfaceholder;
         SurfaceView surfaceview = (SurfaceView)findViewById(R.id.surface);
@@ -94,31 +99,30 @@ public class MyActivity extends ActionBarActivity implements
         surfaceholder.addCallback(new SurfaceHolder.Callback(){
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
-                mcamera=Camera.open();
+                mCamera=Camera.open();
                 try{
-                    mcamera.setPreviewDisplay(holder);
+                    mCamera.setPreviewDisplay(holder);
                 }
                 catch (Exception e){
                     e.printStackTrace();
                 }
             }
             public void surfaceChanged(SurfaceHolder holder,int type, int w,int h ){
-                Camera.Parameters parameters = mcamera.getParameters();
+                Camera.Parameters parameters = mCamera.getParameters();
                 parameters.setRotation(90);
                 parameters.setPreviewSize(w, h);
-                mcamera.setParameters(parameters);
-                mcamera.startPreview();
-                mcamera.setPreviewCallback(new Camera.PreviewCallback() {
+                mCamera.setParameters(parameters);
+                mCamera.startPreview();
+                mCamera.setPreviewCallback(new Camera.PreviewCallback() {
                     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
                     @Override
                     public void onPreviewFrame(byte[] data, Camera camera) {
-                        Camera.Size previewSize = mcamera.getParameters().getPreviewSize();
+                        Camera.Size previewSize = mCamera.getParameters().getPreviewSize();
 
                         int[] rgb = decodeYUV420SP(data, previewSize.width, previewSize.height);
                         Bitmap bmp = Bitmap.createBitmap(rgb, previewSize.width, previewSize.height, Bitmap.Config.ARGB_8888);
                         int smallWidth, smallHeight;
                         int dimension = 200;
-                            dimension = 50;
                         if(previewSize.width > previewSize.height) {
                             smallWidth = dimension;
                             smallHeight = dimension*previewSize.height/previewSize.width;
@@ -128,13 +132,11 @@ public class MyActivity extends ActionBarActivity implements
                         }
 
                         Matrix matrix = new Matrix();
-//                        matrix.postRotate(mCameraOrientation);
 
                         Bitmap bmpSmall = Bitmap.createScaledBitmap(bmp, smallWidth, smallHeight, false);
                         Bitmap bmpSmallRotated = Bitmap.createBitmap(bmpSmall, 0, 0, smallWidth, smallHeight, matrix, false);
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
                         bmpSmallRotated.compress(Bitmap.CompressFormat.WEBP, 80, baos);
-//                        displayFrameLag++;
                         sendToWear("preview", baos.toByteArray(), new ResultCallback<MessageApi.SendMessageResult>() {
                             @Override
                             public void onResult(MessageApi.SendMessageResult result) {
@@ -143,20 +145,17 @@ public class MyActivity extends ActionBarActivity implements
                         bmp.recycle();
                         bmpSmall.recycle();
                         bmpSmallRotated.recycle();
-//                        readyToProcessImage = true;
 
-
-
-//                        sendToWear("preview", data, null);
                     }
                 });
 
-                mcamera.startPreview();
+                mCamera.startPreview();
             }
             @Override
             public void surfaceDestroyed(SurfaceHolder holder) {
-                mcamera.release();
-                mcamera=null;
+                mCamera.setPreviewCallback(null);
+                mCamera.release();
+                mCamera=null;
 
             }
         });
@@ -166,20 +165,17 @@ public class MyActivity extends ActionBarActivity implements
                 .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
                     @Override
                     public void onConnected(Bundle bundle) {
-                        Log.d("jul", "onConnected : " + bundle);
                         findWearNode();
                         Wearable.MessageApi.addListener(mGoogleApiClient, mMessageListener);
                     }
 
                     @Override
                     public void onConnectionSuspended(int i) {
-                        Log.d("jul", "onConnetionSuspended : " + i);
                     }
                 })
                 .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
                     @Override
                     public void onConnectionFailed(ConnectionResult connectionResult) {
-                        Log.d("jul", "onConnectionFailed : " + connectionResult);
                     }
                 })
                 .build();
@@ -246,9 +242,7 @@ public class MyActivity extends ActionBarActivity implements
     public void onDataChanged(DataEventBuffer dataEvents) {
         for (DataEvent event : dataEvents) {
             if (event.getType() == DataEvent.TYPE_DELETED) {
-                Log.d("jul", "DataItem deleted: " + event.getDataItem().getUri());
             } else if (event.getType() == DataEvent.TYPE_CHANGED) {
-                Log.d("jul", "DataItem changed: " + event.getDataItem().getUri());
             }
         }
     }
@@ -274,7 +268,7 @@ public class MyActivity extends ActionBarActivity implements
 
     private void sendToWear(String path, byte[] data, final ResultCallback<MessageApi.SendMessageResult> callback) {
         if (mWearNode != null) {
-            Log.d("jul", "send image = "+data.length);
+            Log.d(TAG, "send image = "+data.length);
             PendingResult<MessageApi.SendMessageResult> pending = Wearable.MessageApi.sendMessage(mGoogleApiClient, mWearNode.getId(), path, data);
             pending.setResultCallback(new ResultCallback<MessageApi.SendMessageResult>() {
                 @Override
@@ -283,12 +277,12 @@ public class MyActivity extends ActionBarActivity implements
                         callback.onResult(result);
                     }
                     if (!result.getStatus().isSuccess()) {
-                        Log.d("jul", "ERROR: failed to send Message: " + result.getStatus());
+                        Log.d(TAG, "ERROR: failed to send Message: " + result.getStatus());
                     }
                 }
             });
         } else {
-            Log.d("jul", "ERROR: tried to send message before device was found");
+            Log.d(TAG, "ERROR: tried to send message before device was found");
         }
     }
 }

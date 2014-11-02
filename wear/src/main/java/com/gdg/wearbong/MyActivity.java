@@ -10,6 +10,7 @@ import android.support.wearable.view.GridViewPager;
 import android.support.wearable.view.WatchViewStub;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.view.WindowInsets;
 import android.widget.ImageView;
@@ -73,6 +74,8 @@ public class MyActivity extends Activity implements DataApi.DataListener, Google
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         setContentView(R.layout.activity_my);
 
         mContext = this;
